@@ -1,0 +1,11 @@
+@font-face {
+  font-family: 'Resale Regular';
+  src: url('../fonts/resale/resale-regular.eot');
+  src: url('../fonts/resale/resale-regular.eot?#iefix')
+      format('embedded-opentype'),
+    url('../fonts/resale/resale-regular.woff2') format('woff2'),
+    url('../fonts/resale/resale-regular.woff') format('woff'),
+    url('../fonts/resale/resale-regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
