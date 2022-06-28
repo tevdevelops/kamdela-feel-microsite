@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 
@@ -30,6 +30,48 @@ const styleObject = computed(() => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+
+  // gsap.fromTo(
+  //   '.sparkle',
+  //   { scale: 0 },
+  //   {
+  //     scale: 3,
+  //     repeat: -1,
+  //     yoyo: true,
+  //     duration: 0.8,
+  //     repeatDelay: 9,
+  // stagger: {
+  //   from: 'random',
+  //   amount: 10,
+  //   each: 7,
+  // },
+  //   }
+  // )
+
+  let animationTimeline = gsap.timeline({
+    scrollTrigger: {
+      markers: true,
+      trigger: '.container--scene-2',
+      pin: true,
+      toggleActions: 'play none resume reverse',
+    },
+  })
+
+  // add animations and labels to the timeline
+  animationTimeline
+    .addLabel('hide-intro')
+    .to('.container--scene-1', { opacity: 0 })
+    .addLabel('show-feel-it')
+    .to('.feel-it div', { opacity: 1, stagger: 0.5 })
+  // .addLabel('color')
+  // .from('.box', { backgroundColor: '#28a92b' })
+  // .addLabel('spin')
+  // .to('.box', { rotation: 360 })
+  // .addLabel('end')
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 
 function handleScroll() {
@@ -38,48 +80,79 @@ function handleScroll() {
 </script>
 
 <template>
-  <div class="time">
-    <h2 class="time__text">{{ timeText }}</h2>
-  </div>
+  <div
+    class="container"
+    :class="{
+      'is-scroll-locked': is_midnight,
+    }"
+  >
+    <div class="sparkles">
+      <img
+        v-for="index in 9"
+        :key="index"
+        src="./assets/images/sparkle.png"
+        class="sparkle"
+      />
+    </div>
 
-  <div class="clock">
-    <svg
-      class="clock__svg"
-      :style="styleObject"
-      viewBox="0 0 125 125"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle
-        class="clock__border"
-        cx="62.5"
-        cy="62.5"
-        r="61"
-        stroke="#F7D9D4"
-        stroke-width="3"
-      />
-      <line
-        class="clock__sec"
-        x1="63"
-        x2="63"
-        y2="62"
-        stroke="#F7D9D4"
-        stroke-width="2"
-      />
-    </svg>
+    <div class="container--scene-1">
+      <div class="time">
+        <h2 class="time__text">{{ timeText }}</h2>
+      </div>
+
+      <div class="clock">
+        <svg
+          class="clock__svg"
+          :style="styleObject"
+          viewBox="0 0 125 125"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            class="clock__border"
+            cx="62.5"
+            cy="62.5"
+            r="61"
+            stroke="#F7D9D4"
+            stroke-width="3"
+          />
+          <line
+            class="clock__sec"
+            x1="63"
+            x2="63"
+            y2="62"
+            stroke="#F7D9D4"
+            stroke-width="2"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <div class="container--scene-2 flex-center">
+      <h2 class="feel-it">
+        <div class="text-split">I</div>
+        <div class="text-split">Feel</div>
+        <div class="text-split">It</div>
+      </h2>
+    </div>
+
+    <div class="film-overlay" :style="{ opacity: scroll / 2000 }"></div>
   </div>
-  <div class="film-overlay" :style="{ opacity: scroll / 2000 }"></div>
 </template>
 
 <style>
 @import url('./assets/styles/resets.css');
 @import url('./assets/styles/fonts.css');
+@import url('./assets/styles/utilities.css');
 
 :root {
   --orange: #ff5f26;
-  --blue: #394378;
+  --blue: #252457;
   --lightPink: #f7d9d4;
+  --darkGrey: #333333;
   --background: -1;
+  --midground: 5;
+  --foreground: 10;
 }
 
 body {
@@ -87,11 +160,38 @@ body {
   font-family: 'Resale Regular', serif;
   -webkit-font-smoothing: antialiased;
   text-align: center;
+  text-transform: uppercase;
   color: var(--lightPink);
 }
 
-#app {
+.sparkles {
+  visibility: hidden;
+  position: fixed;
+  z-index: var(--midground);
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  align-items: center;
+  justify-items: center;
+}
+
+.sparkle {
+  width: 25px;
+  height: auto;
+}
+
+.container--scene-1 {
   min-height: calc(100vh + 2000px);
+}
+
+.container--scene-2 {
+  min-height: 100vh;
+}
+
+.container.is-scroll-locked {
+  /* min-height: 100vh; */
 }
 
 .film-overlay {
@@ -106,25 +206,26 @@ body {
   z-index: var(--background);
 }
 
-.film-overlay__img {
+/* .film-overlay__img {
   position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
   object-fit: cover;
-}
+} */
 
 .time {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: 100%;
 }
 
 .time__text {
-  font-size: 90px;
-  line-height: 108px;
+  font-size: 50px;
+  line-height: 60px;
 }
 
 .clock {
@@ -135,7 +236,43 @@ body {
 }
 
 .clock__svg {
-  width: 100px;
-  height: 100px;
+  width: 75px;
+  height: 75px;
+}
+
+.feel-it {
+  font-size: 45px;
+}
+
+.feel-it .text-split {
+  opacity: 0;
+  margin: 0 10px;
+}
+
+@media (min-width: 700px) {
+  /* .time__text {
+    font-size: 90px;
+    line-height: 108px;
+  } */
+}
+@media (min-width: 1280px) {
+  .time__text {
+    font-size: 90px;
+    line-height: 108px;
+  }
+
+  .feel-it {
+    font-size: 90px;
+    line-height: 108px;
+  }
+
+  .feel-it .text-split {
+    margin: 0 20px;
+  }
+
+  .clock__svg {
+    width: 100px;
+    height: 100px;
+  }
 }
 </style>
