@@ -48,9 +48,13 @@ onMounted(() => {
   //   }
   // )
 
+  //   gsap.to(".class", {
+  //   x:"random([0, 100, 200, 500])" // randomly selects one of the values (0, 100, 200, or 500)
+  // });
+
   let animationTimeline = gsap.timeline({
     scrollTrigger: {
-      markers: true,
+      markers: false,
       trigger: '.container--scene-2',
       pin: true,
       toggleActions: 'play none resume reverse',
@@ -62,7 +66,27 @@ onMounted(() => {
     .addLabel('hide-intro')
     .to('.container--scene-1', { opacity: 0 })
     .addLabel('show-feel-it')
-    .to('.feel-it div', { opacity: 1, stagger: 0.5 })
+    .to('.feel-it > .text-split', { opacity: 1, stagger: 0.5 })
+    .addLabel('transform-feel-it')
+    .to(
+      '.feel-it__i, .feel-it__it',
+      { opacity: 0, width: 0 },
+      'transform-feel-it'
+    )
+    .to('.to-blue', { color: '#252457' }, 'transform-feel-it')
+    .addLabel('translate-letters-1')
+    .to('.feel-it__f', { yPercent: -100 }, 'translate-letters-1')
+    .to('.feel-it__l', { yPercent: 100 }, 'translate-letters-1')
+    .addLabel('translate-letters-2')
+    .to('.feel-it__f', { xPercent: 100, duration: 0.3 }, 'translate-letters-2')
+    .to('.feel-it__l', { xPercent: -108, duration: 0.3 }, 'translate-letters-2')
+    .addLabel('translate-letters-3')
+    .to('.feel-it__f', { yPercent: -50, duration: 0.3 }, 'translate-letters-3')
+    .to('.feel-it__e1', { yPercent: 50, duration: 0.3 }, 'translate-letters-3')
+    .to('.feel-it__e2', { yPercent: -50, duration: 0.4 }, 'translate-letters-3')
+    .to('.feel-it__l', { yPercent: 50, duration: 0.4 }, 'translate-letters-3')
+  // .addLabel('spin-feel-it')
+  // .to('.feel-it__feel', { rotate: 360,  })
   // .addLabel('color')
   // .from('.box', { backgroundColor: '#28a92b' })
   // .addLabel('spin')
@@ -130,9 +154,14 @@ function handleScroll() {
 
     <div class="container--scene-2 flex-center">
       <h2 class="feel-it">
-        <div class="text-split">I</div>
-        <div class="text-split">Feel</div>
-        <div class="text-split">It</div>
+        <div class="text-split feel-it__i">I</div>
+        <div class="text-split feel-it__feel">
+          <div class="text-split to-blue feel-it__f">F</div>
+          <div class="text-split feel-it__e1">E</div>
+          <div class="text-split feel-it__e2">E</div>
+          <div class="text-split to-blue feel-it__l">L</div>
+        </div>
+        <div class="text-split feel-it__it">It</div>
       </h2>
     </div>
 
@@ -244,7 +273,7 @@ body {
   font-size: 45px;
 }
 
-.feel-it .text-split {
+.feel-it > .text-split {
   opacity: 0;
   margin: 0 10px;
 }
@@ -263,10 +292,10 @@ body {
 
   .feel-it {
     font-size: 90px;
-    line-height: 108px;
+    line-height: 90px;
   }
 
-  .feel-it .text-split {
+  .feel-it > .text-split {
     margin: 0 20px;
   }
 
