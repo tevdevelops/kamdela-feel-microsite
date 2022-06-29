@@ -271,6 +271,7 @@ body {
 
 .feel-it {
   font-size: 45px;
+  line-height: 45px;
 }
 
 .feel-it > .text-split {
